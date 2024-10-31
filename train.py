@@ -44,7 +44,7 @@ from utils.image_utils import psnr
 from argparse import ArgumentParser, Namespace
 from arguments import ModelParams, PipelineParams, OptimizationParams
 
-# torch.set_num_threads(32)
+# torch.set_num_threads(1)
 lpips_fn = lpips.LPIPS(net='vgg').to('cuda')
 
 try:
@@ -469,9 +469,9 @@ if __name__ == "__main__":
     parser.add_argument("--test_iterations", nargs="+", type=int, default=[30_000])
     parser.add_argument("--save_iterations", nargs="+", type=int, default=[30_000])
     parser.add_argument("--quiet", action="store_true")
-    parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[])
+    parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[30_000])
     parser.add_argument("--start_checkpoint", type=str, default = None)
-    parser.add_argument("--gpu", type=str, default = '-1')
+    parser.add_argument("--gpu", type=str, default = '4')
     args = parser.parse_args(sys.argv[1:])
     args.save_iterations.append(args.iterations)
 
@@ -522,13 +522,35 @@ if __name__ == "__main__":
     # Start GUI server, configure and run training
     network_gui.init(args.ip, args.port)
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
-    
-    # training
-    training(lp.extract(args), op.extract(args), pp.extract(args), dataset,  args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from, wandb, logger)
-    if args.warmup:
-        logger.info("\n Warmup finished! Reboot from last checkpoints")
-        new_ply_path = os.path.join(args.model_path, f'point_cloud/iteration_{args.iterations}', 'point_cloud.ply')
-        training(lp.extract(args), op.extract(args), pp.extract(args), dataset,  args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from, wandb=wandb, logger=logger, ply_path=new_ply_path)
+
+    for i in range(30):
+        print(op.iterations)
+        if args.warmup:
+            if i == 0:
+                training(lp.extract(args), op.extract(args), pp.extract(args), dataset, args.test_iterations,
+                         args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from,
+                         wandb=wandb, logger=logger)
+                print(i)
+                logger.info("\n ,warm finished! Reboot from last checkpoints")
+            else:
+                new_ply_path = os.path.join(args.model_path, f'point_cloud/iteration_{args.iterations}',
+                                            'point_cloud.ply')
+                training(lp.extract(args), op.extract(args), pp.extract(args), dataset, args.test_iterations,
+                         args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from,
+                         wandb=wandb, logger=logger, ply_path=new_ply_path)
+                print(i)
+                logger.info("\n ,warm finished! Reboot from last checkpoints")
+
+    new_ply_path = os.path.join(args.model_path, f'point_cloud/iteration_{args.iterations}',
+                                'point_cloud.ply')
+    print(op.iterations)
+    op.change_iterations()
+    args.iterations = op.iterations
+    print(op.iterations)
+    training(lp.extract(args), op.extract(args), pp.extract(args), dataset, args.test_iterations,
+             args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, args.debug_from,
+             wandb=wandb, logger=logger, ply_path=new_ply_path)
+    logger.info("\n ,warm final finished! Reboot from last checkpoints")
 
     # All done
     logger.info("\nTraining complete.")
