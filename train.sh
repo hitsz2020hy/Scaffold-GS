@@ -8,7 +8,11 @@ function rand(){
 port=$(rand 10000 30000)
 
 lod=0
+<<<<<<< HEAD
 iterations=30_000
+=======
+iterations=1000
+>>>>>>> f2f3848062440f286b3bad625c52b3140f2b1008
 warmup="False"
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -28,8 +32,16 @@ done
 
 time=$(date "+%Y-%m-%d_%H:%M:%S")
 
+<<<<<<< HEAD
 if [ "$warmup" = "True" ]; then
     python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --warmup --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
 else
     python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
 fi
+=======
+#if [ "$warmup" = "True" ]; then
+    nohup python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --warmup --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time > output.log
+#else
+#    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
+#fi
+>>>>>>> f2f3848062440f286b3bad625c52b3140f2b1008
