@@ -2,18 +2,14 @@ function rand(){
     min=$1
     max=$(($2-$min+1))
     num=$(date +%s%N)
-    echo $(($num%$max+$min))  
+    echo $(($num%$max+$min))
 }
 
 port=$(rand 10000 30000)
 
 lod=0
-<<<<<<< HEAD
 iterations=30_000
-=======
-iterations=1000
->>>>>>> f2f3848062440f286b3bad625c52b3140f2b1008
-warmup="False"
+warmup="Falses"
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -l|--logdir) logdir="$2"; shift ;;
@@ -25,6 +21,7 @@ while [[ "$#" -gt 0 ]]; do
         --update_init_factor) update_init_factor="$2"; shift ;;
         --appearance_dim) appearance_dim="$2"; shift ;;
         --ratio) ratio="$2"; shift ;;
+#        --checkpoint_iterations) checkpoint_iterations="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -32,16 +29,8 @@ done
 
 time=$(date "+%Y-%m-%d_%H:%M:%S")
 
-<<<<<<< HEAD
-if [ "$warmup" = "True" ]; then
-    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --warmup --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
-else
-    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
-fi
-=======
 #if [ "$warmup" = "True" ]; then
-    nohup python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --warmup --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time > output.log
+#    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --warmup --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time 2>&1 | tee output_log/db/playroom.log
 #else
-#    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time
+    python train.py --eval -s data/${data} --lod ${lod} --gpu ${gpu} --voxel_size ${vsize} --update_init_factor ${update_init_factor} --appearance_dim ${appearance_dim} --ratio ${ratio} --iterations ${iterations} --port $port -m outputs/${data}/${logdir}/$time 2>&1 | tee output_log/bungee/1.log
 #fi
->>>>>>> f2f3848062440f286b3bad625c52b3140f2b1008
